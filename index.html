@@ -1,0 +1,74 @@
+<html ng-app="MyApp" lang="en" >
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Angular Material style sheet -->
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.css">
+  <link rel="stylesheet" href="css/main.css">
+  <!-- https://google.github.io/material-design-icons/ -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <!-- Angular Material requires Angular.js Libraries -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-route.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-aria.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-messages.js"></script>
+
+  <!-- Angular Material Library -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.js"></script>
+  
+  <script src="https://www.gstatic.com/firebasejs/3.6.3/firebase.js"></script>
+  <script src="https://cdn.firebase.com/libs/angularfire/2.1.0/angularfire.min.js"></script>
+
+<script>
+// Global variables
+var $rootScope;
+
+// Initialize Firebase
+var config = {
+  apiKey: "AIzaSyANZVvVSiDmZ5REeutNi1QXC40B4l1cbM0",
+  authDomain: "ronnyg-e8cb3.firebaseapp.com",
+  databaseURL: "https://ronnyg-e8cb3.firebaseio.com",
+  storageBucket: "ronnyg-e8cb3.appspot.com",
+  messagingSenderId: "371094523373"
+};
+firebase.initializeApp(config);
+firebase.auth().onAuthStateChanged(function (user) {
+  //user has: uid, photoURL, displayName
+  $rootScope.user = user;
+  updateAngular();
+});
+
+function updateAngular() {
+  if ($rootScope) $rootScope.$apply();
+}
+
+angular.module('MyApp', ['ngMaterial', 'ngRoute', 'firebase'])
+.run(['$rootScope', function (_rootScope) {
+  $rootScope = _rootScope;
+}]);
+</script>
+  
+</head>
+<body ng-cloak>
+  <div class="full_screen" ng-if="!main.myPlayerInfo">
+    <md-button ng-click="main.googleLogin()">
+      Sign in with Google
+    </md-button>
+  </div>
+  <div class="full_screen" ng-if="main.myPlayerInfo">
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <img ng-src="{{user.photoURL}}"
+                  alt="Your avatar" 
+                  class="avatar">
+        <h3>Hi {{user.displayName}}!</h3>
+      </div>
+    </md-toolbar>
+    <md-content flex>
+      Content
+    </md-content>
+  </div>
+  
+</body>
+</html>
