@@ -26,6 +26,14 @@
   height: 100%;
   width: 100%;
 }
+.avatar {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 20px;
+  border: 1px solid #fff;
+}
 </style>
 <script>
 // Initialize Firebase
@@ -50,7 +58,7 @@ function ($rootScope, $firebaseAuth, $firebaseObject) {
       var ref = firebase.database().ref('/user/' + user.uid);
       var data = $firebaseObject(ref);
       $rootScope.userData = data;
-      obj.$bindTo($rootScope, "userData");
+      data.$bindTo($rootScope, "userData");
     }).catch(function(error) {
       console.error("Authentication failed:", error);
     });
@@ -75,18 +83,17 @@ function ($rootScope, $firebaseAuth, $firebaseObject) {
       </div>
     </md-toolbar>
     <md-content layout-padding>
+      <!-- see examples: https://material.angularjs.org/latest/demo/input -->
       <form name="userForm">
-        <div layout-gt-xs="row">
-          <md-input-container class="md-block" flex-gt-xs>
-            <label>Company</label>
-            <input ng-model="userData.company">
-          </md-input-container>
+        <md-input-container>
+          <label>Company</label>
+          <input ng-model="userData.company">
+        </md-input-container>
 
-          <md-input-container>
-            <label>Enter date</label>
-            <md-datepicker ng-model="userData.submissionDate"></md-datepicker>
-          </md-input-container>
-        </div>
+        <md-input-container>
+          <label>Enter date</label>
+          <md-datepicker ng-model="userData.submissionDate"></md-datepicker>
+        </md-input-container>
       </form>
     </md-content>
   </div>
