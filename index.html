@@ -3,7 +3,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Angular Material style sheet -->
   <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.css">
-  <link rel="stylesheet" href="css/main.css">
   <!-- https://google.github.io/material-design-icons/ -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
@@ -20,10 +19,15 @@
   <script src="https://www.gstatic.com/firebasejs/3.6.3/firebase.js"></script>
   <script src="https://cdn.firebase.com/libs/angularfire/2.1.0/angularfire.min.js"></script>
 
+<style>
+.full_screen {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+</style>
 <script>
-// Global variables
-var $rootScope;
-
 // Initialize Firebase
 var config = {
   apiKey: "AIzaSyANZVvVSiDmZ5REeutNi1QXC40B4l1cbM0",
@@ -33,30 +37,35 @@ var config = {
   messagingSenderId: "371094523373"
 };
 firebase.initializeApp(config);
-firebase.auth().onAuthStateChanged(function (user) {
-  //user has: uid, photoURL, displayName
-  $rootScope.user = user;
-  updateAngular();
-});
-
-function updateAngular() {
-  if ($rootScope) $rootScope.$apply();
-}
 
 angular.module('MyApp', ['ngMaterial', 'ngRoute', 'firebase'])
-.run(['$rootScope', function (_rootScope) {
-  $rootScope = _rootScope;
+.run(['$rootScope', "$firebaseAuth", "$firebaseObject",
+function ($rootScope, $firebaseAuth, $firebaseObject) {
+  $rootScope.googleLogin = function () {
+    $firebaseAuth().$signInWithPopup("google").then(function(result) {
+      // user has: uid, photoURL, displayName
+      var user = result.user;
+      console.log("Signed in as:", user.uid);
+      $rootScope.user = user;
+      var ref = firebase.database().ref('/user/' + user.uid);
+      var data = $firebaseObject(ref);
+      $rootScope.userData = data;
+      obj.$bindTo($rootScope, "userData");
+    }).catch(function(error) {
+      console.error("Authentication failed:", error);
+    });
+  };
 }]);
 </script>
   
 </head>
 <body ng-cloak>
-  <div class="full_screen" ng-if="!main.myPlayerInfo">
-    <md-button ng-click="main.googleLogin()">
+  <div ng-if="!user">
+    <md-button ng-click="googleLogin()">
       Sign in with Google
     </md-button>
   </div>
-  <div class="full_screen" ng-if="main.myPlayerInfo">
+  <div class="full_screen" ng-if="user">
     <md-toolbar>
       <div class="md-toolbar-tools">
         <img ng-src="{{user.photoURL}}"
@@ -65,10 +74,21 @@ angular.module('MyApp', ['ngMaterial', 'ngRoute', 'firebase'])
         <h3>Hi {{user.displayName}}!</h3>
       </div>
     </md-toolbar>
-    <md-content flex>
-      Content
+    <md-content layout-padding>
+      <form name="userForm">
+        <div layout-gt-xs="row">
+          <md-input-container class="md-block" flex-gt-xs>
+            <label>Company</label>
+            <input ng-model="userData.company">
+          </md-input-container>
+
+          <md-input-container>
+            <label>Enter date</label>
+            <md-datepicker ng-model="userData.submissionDate"></md-datepicker>
+          </md-input-container>
+        </div>
+      </form>
     </md-content>
   </div>
-  
 </body>
 </html>
