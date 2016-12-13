@@ -53,7 +53,7 @@ function ($rootScope, $firebaseAuth, $firebaseObject) {
   authObj.$onAuthStateChanged(function(user) {
     if (user) {
       // user has: uid, photoURL, displayName
-      console.log("Signed in as:", user.uid);
+      console.log("Signed in as:", user);
       $rootScope.user = user;
       var ref = firebase.database().ref('/user/' + user.uid);
       var data = $firebaseObject(ref);
@@ -97,8 +97,8 @@ function ($rootScope, $firebaseAuth, $firebaseObject) {
         </md-input-container>
 
         <md-input-container>
-          <label>Enter date</label>
-          <md-datepicker ng-model="userData.submissionDate"></md-datepicker>
+          <label>Another field</label>
+          <input ng-model="userData.blablabla">
         </md-input-container>
       </form>
     </md-content>
